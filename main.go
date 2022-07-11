@@ -6,9 +6,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
-	"github.com/feel-easy/hole/models"
-	"github.com/feel-easy/hole/ui"
+	"github.com/feel-easy/hole/client"
 )
 
 var (
@@ -23,25 +23,15 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// client := client.GetClient(serverIP, serverPort)
-	// if client == nil {
-	// 	fmt.Println(">>>>>>>>服务器连接失败>>>>>>>>>")
-	// 	return
-	// }
+	client := client.GetClient(serverIP, serverPort)
+	if client == nil {
+		fmt.Println(">>>>>>>>服务器连接失败>>>>>>>>>")
+		return
+	}
 
-	// fmt.Println(">>>>>>>>>>服务器连接成功>>>>>>>>>>>")
-	// go client.DealResponse()
-	// client.Run()
+	fmt.Println(">>>>>>>>>>服务器连接成功>>>>>>>>>>>")
+	go client.DealResponse()
+	client.Run()
 
-	// select {}
-	maxChanSize := 10000
-
-	//log.SetLevel(log.DebugLevel)
-	msgIn := make(chan models.Message, maxChanSize)
-	msgOut := make(chan models.MessageOut, maxChanSize)
-	autoReply := make(chan int, maxChanSize)
-	closeChan := make(chan int, maxChanSize)
-
-	layout := ui.NewLayout("张三", "aa", msgIn, msgOut, closeChan, autoReply, nil)
-	layout.Init()
+	select {}
 }
