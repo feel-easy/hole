@@ -2,59 +2,46 @@ package client
 
 import (
 	"fmt"
-	"io"
-	"net"
 	"os"
+	"time"
+
+	"github.com/feel-easy/hole/utils"
+	"github.com/feel-easy/hole/utils/logs"
 )
 
-// 定义Client类型
 type Client struct {
-	IP   string
-	Port string
-	Name string
-	conn net.Conn
-	flag int
+	ctx  *Context
+	addr string
 }
 
-func GetClient(IP, Port string) *Client {
-	conn, err := net.Dial("tcp", IP+":"+Port)
-	if err != nil {
-		fmt.Println("客户端连接失败，错误信息为:", err)
-		return nil
-	}
+func NewClient(addr string) *Client {
 	return &Client{
-		IP:   IP,
-		Port: Port,
-		conn: conn,
-		flag: 999,
+		addr: addr,
 	}
 }
 
-func (client *Client) Run() {
-	client.UpdateName()
-	for client.flag != 0 {
-		for client.menu() != true {
-			// 死循环，反复执行menu函数
-		}
-		// Go的switch不需要break语句
-		switch client.flag {
-		case 1:
-			// 公聊模式代码块
-			fmt.Println("您已进入公聊模式")
-			client.PublicChat()
-			break
-		case 2:
-			// 私聊模式代码块
-			fmt.Println("您已进入私聊模式")
-			client.PrivateChat()
-			break
-		}
+func (s *Client) Start() error {
+	fmt.Printf("Nickname: ")
+	name, _ := utils.Readline()
+	if len(os.Args) > 2 {
+		s.addr = os.Args[2]
 	}
-}
-
-// 监听服务器返回消息的方法，单开go程
-func (client *Client) DealResponse() {
-	// 一种读入连接并显示到标准输出的简写方法
-	// fmt.Println("客户端显示方法执行")
-	io.Copy(os.Stdout, client.conn)
+	s.ctx = NewContext(LoginRespData{
+		ID:       int(time.Now().UnixNano()),
+		Name:     string(name),
+		Score:    100,
+		Username: string(name),
+		Token:    "aeiou",
+	})
+	err := s.ctx.Connect("tcp", s.addr)
+	if err != nil {
+		logs.Error(err)
+		return err
+	}
+	err = s.ctx.Auth()
+	if err != nil {
+		logs.Error(err)
+		return err
+	}
+	return s.ctx.Listener()
 }

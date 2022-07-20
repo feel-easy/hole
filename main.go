@@ -7,31 +7,31 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/feel-easy/hole/client"
+	"github.com/feel-easy/hole/utils/logs"
 )
 
 var (
-	serverIP   string
-	serverPort string
+	address string
 )
 
+const HELP = ""
+
 func init() {
-	flag.StringVar(&serverIP, "ip", "127.0.0.1", "设置服务器的IP地址")
-	flag.StringVar(&serverPort, "port", "8888", "设置服务器的连接端口号")
+	flag.StringVar(&address, "addr", "127.0.0.1:9999", "服务器的地址")
 }
 
 func main() {
 	flag.Parse()
-	client := client.GetClient(serverIP, serverPort)
-	if client == nil {
-		fmt.Println(">>>>>>>>服务器连接失败>>>>>>>>>")
-		return
+	if len(os.Args) > 0 {
+		for _, arg := range os.Args {
+			if arg == "-help" {
+				fmt.Print(HELP)
+				os.Exit(0)
+			}
+		}
 	}
-
-	fmt.Println(">>>>>>>>>>服务器连接成功>>>>>>>>>>>")
-	go client.DealResponse()
-	client.Run()
-
-	select {}
+	logs.Error(client.NewClient(address).Start())
 }
