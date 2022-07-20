@@ -31,6 +31,7 @@ func GetClient(IP, Port string) *Client {
 }
 
 func (client *Client) Run() {
+	client.UpdateName()
 	for client.flag != 0 {
 		for client.menu() != true {
 			// 死循环，反复执行menu函数
@@ -47,10 +48,6 @@ func (client *Client) Run() {
 			fmt.Println("您已进入私聊模式")
 			client.PrivateChat()
 			break
-		case 3:
-			fmt.Println("您选择了更改用户名")
-			client.UpdateName()
-			break
 		}
 	}
 }
@@ -58,6 +55,6 @@ func (client *Client) Run() {
 // 监听服务器返回消息的方法，单开go程
 func (client *Client) DealResponse() {
 	// 一种读入连接并显示到标准输出的简写方法
-	fmt.Println("客户端显示方法执行")
+	// fmt.Println("客户端显示方法执行")
 	io.Copy(os.Stdout, client.conn)
 }

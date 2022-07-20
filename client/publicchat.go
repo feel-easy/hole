@@ -4,10 +4,12 @@ import "fmt"
 
 // 公聊模式
 func (client *Client) PublicChat() {
-	fmt.Println(">>>>请输入您的消息: exit表示退出")
 	var msg string
-	fmt.Scanln(&msg)
+	fmt.Println(">>>>请输入您的消息: exit表示退出")
 	for msg != "exit" {
+		if _, err := fmt.Scanln(&msg); err != nil {
+			return
+		}
 		if msg != "" {
 			_, err := client.conn.Write([]byte(msg + "\n"))
 			if err != nil {
@@ -15,9 +17,6 @@ func (client *Client) PublicChat() {
 				return
 			}
 			msg = ""
-			fmt.Println(">>>>请输入您的消息: exit表示退出")
-			fmt.Scanln(&msg)
 		}
-
 	}
 }
