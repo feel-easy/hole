@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/feel-easy/hole/utils"
@@ -22,16 +21,12 @@ func NewClient(addr string) *Client {
 
 func (s *Client) Start() error {
 	fmt.Printf("Nickname: ")
-	name, _ := utils.Readline()
-	if len(os.Args) > 2 {
-		s.addr = os.Args[2]
-	}
+	name, _ := utils.ReadLine()
 	s.ctx = NewContext(LoginRespData{
 		ID:       int(time.Now().UnixNano()),
 		Name:     string(name),
 		Score:    100,
 		Username: string(name),
-		Token:    "aeiou",
 	})
 	err := s.ctx.Connect("tcp", s.addr)
 	if err != nil {

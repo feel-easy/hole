@@ -14,7 +14,7 @@ var (
 	buffer               = bytes.Buffer{}
 )
 
-func Readline() ([]byte, error) {
+func ReadLine() ([]byte, error) {
 	lines, err := in.ReadBytes('\n')
 	if err != nil {
 		return nil, err
